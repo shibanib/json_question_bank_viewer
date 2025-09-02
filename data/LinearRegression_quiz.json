@@ -1,0 +1,490 @@
+{
+  "quiz_metadata": {
+    "lesson_name": "Introduction to Linear Regression",
+    "lesson_code": "LR",
+    "total_questions": 20,
+    "generation_date": "2025-09-02",
+    "pdf_source": "LinearRegression.pdf",
+    "total_pages": 31
+  },
+  "learning_objectives": {
+    "module_1": {
+      "name": "Introduction and Motivation",
+      "pages": "1-4",
+      "objectives": [
+        "Distinguish between parametric and nonparametric approaches to regression modeling",
+        "Compare linear regression with kNN for interpretability and inference capabilities"
+      ]
+    },
+    "module_2": {
+      "name": "Simple Linear Regression Fundamentals",
+      "pages": "5-11",
+      "objectives": [
+        "Construct the basic linear regression model using the form f(x) = β₀ + β₁X",
+        "Explain the conceptual difference between true parameters β₀, β₁ and their estimates β̂₀, β̂₁",
+        "Analyze residuals to evaluate model fit quality",
+        "Minimize the Mean Squared Error (MSE) loss function to find optimal parameters"
+      ]
+    },
+    "module_3": {
+      "name": "Scikit-learn Implementation",
+      "pages": "12-16",
+      "objectives": [
+        "Implement linear regression using scikit-learn's LinearRegression class",
+        "Interpret regression coefficients in terms of slope and intercept"
+      ]
+    },
+    "module_4": {
+      "name": "Mathematical Foundation - Derivatives",
+      "pages": "17-23",
+      "objectives": [
+        "Calculate partial derivatives for optimization of loss functions",
+        "Apply the chain rule to compute gradients of composite functions"
+      ]
+    },
+    "module_5": {
+      "name": "Optimization and Closed-form Solution",
+      "pages": "24-31",
+      "objectives": [
+        "Derive the closed-form solution for linear regression coefficients",
+        "Compare different optimization approaches for finding optimal parameters"
+      ]
+    }
+  },
+  "questions": [
+    {
+      "question_id": "01LR",
+      "lesson_name": "Introduction to Linear Regression",
+      "lesson_code": "LR",
+      "module": 1,
+      "difficulty": "Easy",
+      "bloom_level": "Remembering",
+      "learning_objective": "Distinguish between parametric and nonparametric approaches",
+      "question_text": "What is the key characteristic that distinguishes parametric models from nonparametric models?",
+      "type": "multiple_choice",
+      "options": {
+        "A": "Parametric models are always linear while nonparametric models are always nonlinear",
+        "B": "Parametric models have a fixed number of parameters while nonparametric models don't",
+        "C": "Parametric models use gradients while nonparametric models don't",
+        "D": "Parametric models require more data than nonparametric models"
+      },
+      "correct_answer": "B",
+      "explanation": "Parametric models have a predetermined, fixed number of parameters (like β₀ and β₁ in linear regression), while nonparametric models can have a flexible number of parameters that may grow with the data.",
+      "page_reference": "1-4",
+      "tags": ["parametric", "nonparametric", "models"]
+    },
+    {
+      "question_id": "02LR",
+      "lesson_name": "Introduction to Linear Regression",
+      "lesson_code": "LR",
+      "module": 2,
+      "difficulty": "Easy",
+      "bloom_level": "Remembering",
+      "learning_objective": "Recall the basic linear model form",
+      "question_text": "The standard form of a simple linear regression model is:",
+      "type": "multiple_choice",
+      "options": {
+        "A": "f(x) = β₀ + β₁X + ε",
+        "B": "f(x) = β₀ + β₁X",
+        "C": "f(x) = β₁X + β₀²",
+        "D": "f(x) = β₀ × β₁X"
+      },
+      "correct_answer": "B",
+      "explanation": "The linear model form is f(x) = β₀ + β₁X, where β₀ is the intercept and β₁ is the slope coefficient.",
+      "page_reference": "5",
+      "tags": ["linear_model", "equation", "parameters"]
+    },
+    {
+      "question_id": "03LR",
+      "lesson_name": "Introduction to Linear Regression",
+      "lesson_code": "LR",
+      "module": 2,
+      "difficulty": "Medium",
+      "bloom_level": "Understanding",
+      "learning_objective": "Explain residuals and their calculation",
+      "question_text": "What does a residual represent in linear regression?",
+      "type": "multiple_choice",
+      "options": {
+        "A": "The predicted value for a data point",
+        "B": "The difference between actual and predicted values",
+        "C": "The slope of the regression line",
+        "D": "The correlation coefficient"
+      },
+      "correct_answer": "B",
+      "explanation": "A residual rᵢ = |yᵢ - ŷᵢ| represents the absolute difference between the actual observed value yᵢ and the predicted value ŷᵢ from the model.",
+      "page_reference": "10",
+      "tags": ["residuals", "error", "prediction"]
+    },
+    {
+      "question_id": "04LR",
+      "lesson_name": "Introduction to Linear Regression",
+      "lesson_code": "LR",
+      "module": 2,
+      "difficulty": "Medium",
+      "bloom_level": "Understanding",
+      "learning_objective": "Understand MSE loss function",
+      "question_text": "The Mean Squared Error (MSE) loss function is calculated as:",
+      "type": "multiple_choice",
+      "options": {
+        "A": "L = Σ(yᵢ - ŷᵢ)",
+        "B": "L = (1/n)Σ|yᵢ - ŷᵢ|",
+        "C": "L = (1/n)Σ(yᵢ - ŷᵢ)²",
+        "D": "L = √[(1/n)Σ(yᵢ - ŷᵢ)²]"
+      },
+      "correct_answer": "C",
+      "explanation": "The MSE loss function L = (1/n)Σ(yᵢ - ŷᵢ)² calculates the average of squared differences between actual and predicted values, penalizing larger errors more heavily.",
+      "page_reference": "11",
+      "tags": ["MSE", "loss_function", "optimization"]
+    },
+    {
+      "question_id": "05LR",
+      "lesson_name": "Introduction to Linear Regression",
+      "lesson_code": "LR",
+      "module": 3,
+      "difficulty": "Medium",
+      "bloom_level": "Understanding",
+      "learning_objective": "Understand scikit-learn implementation",
+      "question_text": "Which scikit-learn method is used to train a LinearRegression model?",
+      "type": "multiple_choice",
+      "options": {
+        "A": "train()",
+        "B": "fit()",
+        "C": "learn()",
+        "D": "optimize()"
+      },
+      "correct_answer": "B",
+      "explanation": "The fit() method is used to train the LinearRegression model by finding the optimal parameters β₀ and β₁ that minimize the MSE loss.",
+      "page_reference": "14-16",
+      "tags": ["scikit-learn", "fit", "training"]
+    },
+    {
+      "question_id": "06LR",
+      "lesson_name": "Introduction to Linear Regression",
+      "lesson_code": "LR",
+      "module": 3,
+      "difficulty": "Medium",
+      "bloom_level": "Understanding",
+      "learning_objective": "Understand scikit-learn attributes",
+      "question_text": "After fitting a LinearRegression model, which attribute contains the slope coefficient β₁?",
+      "type": "multiple_choice",
+      "options": {
+        "A": "intercept_",
+        "B": "coef_",
+        "C": "slope_",
+        "D": "beta1_"
+      },
+      "correct_answer": "B",
+      "explanation": "The coef_ attribute stores the slope coefficient β₁, while intercept_ stores β₀. These attributes are available after calling fit().",
+      "page_reference": "14-16",
+      "tags": ["scikit-learn", "attributes", "coefficients"]
+    },
+    {
+      "question_id": "07LR",
+      "lesson_name": "Introduction to Linear Regression",
+      "lesson_code": "LR",
+      "module": 4,
+      "difficulty": "Medium",
+      "bloom_level": "Understanding",
+      "learning_objective": "Understand partial derivatives concept",
+      "question_text": "What does the partial derivative ∂L/∂β₀ represent in linear regression?",
+      "type": "multiple_choice",
+      "options": {
+        "A": "The rate of change of loss with respect to the slope",
+        "B": "The rate of change of loss with respect to the intercept",
+        "C": "The total derivative of the loss function",
+        "D": "The second derivative of the loss function"
+      },
+      "correct_answer": "B",
+      "explanation": "∂L/∂β₀ represents how the loss function L changes with respect to the intercept parameter β₀, holding other parameters constant.",
+      "page_reference": "19-23",
+      "tags": ["partial_derivatives", "calculus", "optimization"]
+    },
+    {
+      "question_id": "08LR",
+      "lesson_name": "Introduction to Linear Regression",
+      "lesson_code": "LR",
+      "module": 5,
+      "difficulty": "Medium",
+      "bloom_level": "Understanding",
+      "learning_objective": "Understand gradient vector concept",
+      "question_text": "The gradient vector ∇L in linear regression contains which components?",
+      "type": "multiple_choice",
+      "options": {
+        "A": "[β₀, β₁]",
+        "B": "[∂L/∂β₀, ∂L/∂β₁]",
+        "C": "[yᵢ, ŷᵢ]",
+        "D": "[x̄, ȳ]"
+      },
+      "correct_answer": "B",
+      "explanation": "The gradient vector ∇L = [∂L/∂β₀, ∂L/∂β₁] contains the partial derivatives of the loss function with respect to each parameter.",
+      "page_reference": "24",
+      "tags": ["gradient", "vector", "derivatives"]
+    },
+    {
+      "question_id": "09LR",
+      "lesson_name": "Introduction to Linear Regression",
+      "lesson_code": "LR",
+      "module": 3,
+      "difficulty": "Medium",
+      "bloom_level": "Applying",
+      "learning_objective": "Apply scikit-learn for predictions",
+      "question_text": "Given a trained LinearRegression model with coef_ = [2.5] and intercept_ = 1.0, what is the predicted value for x = 3?",
+      "type": "multiple_choice",
+      "options": {
+        "A": "6.5",
+        "B": "7.5",
+        "C": "8.5",
+        "D": "9.5"
+      },
+      "correct_answer": "C",
+      "explanation": "Using f(x) = β₀ + β₁X = 1.0 + 2.5(3) = 1.0 + 7.5 = 8.5",
+      "page_reference": "14-16",
+      "tags": ["prediction", "calculation", "scikit-learn"]
+    },
+    {
+      "question_id": "10LR",
+      "lesson_name": "Introduction to Linear Regression",
+      "lesson_code": "LR",
+      "module": 2,
+      "difficulty": "Medium",
+      "bloom_level": "Applying",
+      "learning_objective": "Calculate residuals",
+      "question_text": "If the actual value is y = 12 and the predicted value is ŷ = 9, what is the residual?",
+      "type": "multiple_choice",
+      "options": {
+        "A": "3",
+        "B": "-3",
+        "C": "21",
+        "D": "9"
+      },
+      "correct_answer": "A",
+      "explanation": "The residual rᵢ = |yᵢ - ŷᵢ| = |12 - 9| = 3. The absolute value ensures the residual is always positive.",
+      "page_reference": "10",
+      "tags": ["residual", "calculation", "error"]
+    },
+    {
+      "question_id": "11LR",
+      "lesson_name": "Introduction to Linear Regression",
+      "lesson_code": "LR",
+      "module": 2,
+      "difficulty": "Medium",
+      "bloom_level": "Applying",
+      "learning_objective": "Calculate MSE loss",
+      "question_text": "For predictions [2, 4, 6] and actual values [3, 3, 8], what is the MSE loss?",
+      "type": "multiple_choice",
+      "options": {
+        "A": "2.0",
+        "B": "2.33",
+        "C": "3.0",
+        "D": "1.67"
+      },
+      "correct_answer": "A",
+      "explanation": "MSE = (1/3)[(3-2)² + (3-4)² + (8-6)²] = (1/3)[1 + 1 + 4] = 6/3 = 2.0",
+      "page_reference": "11",
+      "tags": ["MSE", "calculation", "loss"]
+    },
+    {
+      "question_id": "12LR",
+      "lesson_name": "Introduction to Linear Regression",
+      "lesson_code": "LR",
+      "module": 5,
+      "difficulty": "Medium",
+      "bloom_level": "Applying",
+      "learning_objective": "Apply closed-form solution concept",
+      "question_text": "If x̄ = 5, ȳ = 10, and β̂₁ = 2, what is β̂₀ using the closed-form solution?",
+      "type": "multiple_choice",
+      "options": {
+        "A": "0",
+        "B": "5",
+        "C": "10",
+        "D": "20"
+      },
+      "correct_answer": "A",
+      "explanation": "Using the closed-form solution β̂₀ = ȳ - β̂₁x̄ = 10 - 2(5) = 10 - 10 = 0",
+      "page_reference": "31",
+      "tags": ["closed-form", "intercept", "calculation"]
+    },
+    {
+      "question_id": "13LR",
+      "lesson_name": "Introduction to Linear Regression",
+      "lesson_code": "LR",
+      "module": 4,
+      "difficulty": "Difficult",
+      "bloom_level": "Analyzing",
+      "learning_objective": "Analyze the relationship between derivatives and optimization",
+      "question_text": "Why are partial derivatives important for optimizing the linear regression loss function?",
+      "type": "multiple_choice",
+      "options": {
+        "A": "They provide the exact solution without iteration",
+        "B": "They indicate the direction of steepest increase in loss",
+        "C": "They eliminate the need for training data",
+        "D": "They guarantee global convergence"
+      },
+      "correct_answer": "B",
+      "explanation": "Partial derivatives show the direction of steepest increase in the loss function. By moving in the opposite direction (negative gradient), we can minimize the loss through gradient descent optimization.",
+      "page_reference": "19-23",
+      "tags": ["optimization", "derivatives", "gradient_descent"]
+    },
+    {
+      "question_id": "14LR",
+      "lesson_name": "Introduction to Linear Regression",
+      "lesson_code": "LR",
+      "module": 2,
+      "difficulty": "Difficult",
+      "bloom_level": "Analyzing",
+      "learning_objective": "Analyze the relationship between residuals and model performance",
+      "question_text": "How do residuals relate to model performance in linear regression?",
+      "type": "multiple_choice",
+      "options": {
+        "A": "Larger residuals always indicate better model performance",
+        "B": "Smaller residuals generally indicate better model fit to the data",
+        "C": "Residuals have no relationship to model performance",
+        "D": "Only negative residuals indicate good performance"
+      },
+      "correct_answer": "B",
+      "explanation": "Smaller residuals indicate that predicted values are closer to actual values, which generally means the model fits the data better. However, very small residuals might also indicate overfitting.",
+      "page_reference": "10",
+      "tags": ["residuals", "model_performance", "evaluation"]
+    },
+    {
+      "question_id": "15LR",
+      "lesson_name": "Introduction to Linear Regression",
+      "lesson_code": "LR",
+      "module": 5,
+      "difficulty": "Difficult",
+      "bloom_level": "Analyzing",
+      "learning_objective": "Analyze optimization approaches",
+      "question_text": "What is the main advantage of using the closed-form solution over gradient descent for linear regression?",
+      "type": "multiple_choice",
+      "options": {
+        "A": "It works better with large datasets",
+        "B": "It provides the exact optimal solution in one step",
+        "C": "It handles non-linear relationships better",
+        "D": "It requires less mathematical knowledge"
+      },
+      "correct_answer": "B",
+      "explanation": "The closed-form solution provides the mathematically exact optimal parameters β̂₀ and β̂₁ in one direct calculation, unlike gradient descent which iteratively approaches the solution.",
+      "page_reference": "24-31",
+      "tags": ["closed-form", "optimization", "gradient_descent"]
+    },
+    {
+      "question_id": "16LR",
+      "lesson_name": "Introduction to Linear Regression",
+      "lesson_code": "LR",
+      "module": 1,
+      "difficulty": "Difficult",
+      "bloom_level": "Analyzing",
+      "learning_objective": "Compare parametric and nonparametric approaches",
+      "question_text": "In what scenario would a parametric approach like linear regression be preferred over a nonparametric approach?",
+      "type": "multiple_choice",
+      "options": {
+        "A": "When you have unlimited computational resources",
+        "B": "When you want interpretable coefficients and have domain knowledge about linear relationships",
+        "C": "When the relationship between variables is definitely nonlinear",
+        "D": "When you have very little training data"
+      },
+      "correct_answer": "B",
+      "explanation": "Parametric approaches like linear regression are preferred when you have prior knowledge suggesting linear relationships and need interpretable coefficients (β₀, β₁) to understand the relationship between variables.",
+      "page_reference": "1-4",
+      "tags": ["parametric", "interpretability", "domain_knowledge"]
+    },
+    {
+      "question_id": "17LR",
+      "lesson_name": "Introduction to Linear Regression",
+      "lesson_code": "LR",
+      "module": 4,
+      "difficulty": "Challenging",
+      "bloom_level": "Evaluating",
+      "learning_objective": "Evaluate derivative calculations and their implications",
+      "question_text": "Evaluate the mathematical correctness: 'The gradient vector points in the direction of steepest decrease of the loss function.'",
+      "type": "multiple_choice",
+      "options": {
+        "A": "True - the gradient always points toward the minimum",
+        "B": "False - the gradient points in the direction of steepest increase",
+        "C": "True - gradients are designed to minimize functions",
+        "D": "False - gradients are unrelated to function direction"
+      },
+      "correct_answer": "B",
+      "explanation": "The gradient vector ∇L points in the direction of steepest increase of the loss function. To minimize the loss, we move in the opposite direction (-∇L), which is why gradient descent uses the negative gradient.",
+      "page_reference": "19-24",
+      "tags": ["gradient", "optimization", "mathematical_concepts"]
+    },
+    {
+      "question_id": "18LR",
+      "lesson_name": "Introduction to Linear Regression",
+      "lesson_code": "LR",
+      "module": 5,
+      "difficulty": "Challenging",
+      "bloom_level": "Evaluating",
+      "learning_objective": "Evaluate optimization trade-offs",
+      "question_text": "Assess the statement: 'The closed-form solution for linear regression is always preferable to iterative optimization methods.'",
+      "type": "multiple_choice",
+      "options": {
+        "A": "True - it's always faster and more accurate",
+        "B": "False - iterative methods can handle larger datasets more efficiently",
+        "C": "True - closed-form solutions eliminate all computational errors",
+        "D": "False - iterative methods always find better solutions"
+      },
+      "correct_answer": "B",
+      "explanation": "While closed-form solutions are exact and require no iterations, they become computationally expensive for very large datasets due to matrix operations. Iterative methods like gradient descent can be more memory and computationally efficient for large-scale problems.",
+      "page_reference": "24-31",
+      "tags": ["optimization", "scalability", "computational_efficiency"]
+    },
+    {
+      "question_id": "19LR",
+      "lesson_name": "Introduction to Linear Regression",
+      "lesson_code": "LR",
+      "module": 3,
+      "difficulty": "Easy",
+      "bloom_level": "Understanding",
+      "learning_objective": "Identify scikit-learn method usage",
+      "question_text": "The predict() method in scikit-learn's LinearRegression can be used before calling fit().",
+      "type": "true_false",
+      "correct_answer": false,
+      "explanation": "The predict() method cannot be used before fit() because the model parameters (β₀ and β₁) haven't been learned yet. The fit() method must be called first to train the model.",
+      "page_reference": "14-16",
+      "tags": ["scikit-learn", "workflow", "methods"]
+    },
+    {
+      "question_id": "20LR",
+      "lesson_name": "Introduction to Linear Regression",
+      "lesson_code": "LR",
+      "module": 2,
+      "difficulty": "Easy",
+      "bloom_level": "Understanding",
+      "learning_objective": "Understand MSE properties",
+      "question_text": "MSE loss penalizes larger prediction errors more heavily than smaller errors.",
+      "type": "true_false",
+      "correct_answer": true,
+      "explanation": "MSE uses squared differences (yᵢ - ŷᵢ)², which means larger errors are penalized disproportionately more than smaller errors. For example, an error of 2 contributes 4 to the loss, while an error of 4 contributes 16.",
+      "page_reference": "11",
+      "tags": ["MSE", "error_penalty", "loss_function"]
+    }
+  ],
+  "distribution_summary": {
+    "difficulty": {
+      "Easy": 4,
+      "Medium": 10,
+      "Difficult": 4,
+      "Challenging": 2
+    },
+    "bloom_taxonomy": {
+      "Remembering": 2,
+      "Understanding": 8,
+      "Applying": 4,
+      "Analyzing": 4,
+      "Evaluating": 2
+    },
+    "question_type": {
+      "multiple_choice": 18,
+      "true_false": 2
+    },
+    "module_coverage": {
+      "module_1": 2,
+      "module_2": 6,
+      "module_3": 4,
+      "module_4": 3,
+      "module_5": 5
+    }
+  }
+}
