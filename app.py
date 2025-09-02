@@ -5,6 +5,7 @@ import pandas as pd
 import streamlit as st
 
 
+@st.cache_data(show_spinner=False)
 def load_json(filepath: Path):
     try:
         with filepath.open("r", encoding="utf-8") as f:
@@ -37,7 +38,7 @@ def main():
     st.set_page_config(page_title="Question Bank Viewer", layout="wide")
     st.title("Question Bank JSON Viewer")
 
-    default_path = Path("data/LinearRegression_quiz.json")
+    default_path = (Path(__file__).parent / "data" / "LinearRegression_quiz.json").resolve()
     st.sidebar.header("Data Source")
 
     use_project_file = st.sidebar.checkbox(
