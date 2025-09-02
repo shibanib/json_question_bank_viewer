@@ -39,62 +39,80 @@ def main():
     st.title("Question Bank JSON Viewer")
 
     default_path = (Path(__file__).parent / "data" / "LinearRegression_quiz.json").resolve()
-    st.sidebar.header("Data Source")
+    st.sidebar.header("Data Sources")
 
-    use_project_file = st.sidebar.checkbox(
-        "Use project JSON file (data/LinearRegression_quiz.json)", value=True
+    # Discover JSON files in data directory
+    data_dir = default_path.parent
+    available_files = sorted([p for p in data_dir.glob("*.json")])
+    available_labels = [p.name for p in available_files]
+
+    selected_labels = st.sidebar.multiselect(
+        "Select project JSON files",
+        options=available_labels,
+        default=[default_path.name] if default_path.exists() else [],
     )
 
-    uploaded_file = None
-    if not use_project_file:
-        uploaded_file = st.sidebar.file_uploader("Upload a JSON file", type=["json"]) 
+    uploads = st.sidebar.file_uploader(
+        "Or upload additional JSON files",
+        type=["json"],
+        accept_multiple_files=True,
+    )
 
-    data = None
-    source_desc = ""
-    if use_project_file:
-        if default_path.exists():
-            data = load_json(default_path)
-            source_desc = str(default_path)
+    # Load all selected sources
+    datasets = []  # list of tuples (label, data_dict)
+    for label in selected_labels:
+        path = data_dir / label
+        if path.exists():
+            datasets.append((label, load_json(path)))
         else:
-            st.error(f"Default file not found at {default_path}")
-    else:
-        if uploaded_file is not None:
-            try:
-                data = json.load(uploaded_file)
-                source_desc = uploaded_file.name
-            except Exception as exc:
-                st.error(f"Failed to parse uploaded JSON: {exc}")
+            st.warning(f"Selected file not found: {label}")
 
-    if data is None:
-        st.info("Provide a valid JSON file to view its contents.")
+    if uploads:
+        for uf in uploads:
+            try:
+                datasets.append((uf.name, json.load(uf)))
+            except Exception as exc:
+                st.error(f"Failed to parse uploaded JSON {uf.name}: {exc}")
+
+    if not datasets:
+        st.info("Select or upload at least one JSON file.")
         return
 
-    st.caption(f"Source: {source_desc}")
+    source_desc = ", ".join([lbl for lbl, _ in datasets])
+    st.caption(f"Sources: {source_desc}")
 
     # --- Learning Objectives (Top Section) ---
-    learning_objectives = data.get("learning_objectives") if isinstance(data, dict) else None
-    if isinstance(learning_objectives, dict) and len(learning_objectives) > 0:
-        st.subheader("Learning Objectives")
-        # Keep the natural module order
-        for module_key, module_info in learning_objectives.items():
-            name = module_info.get("name", module_key)
-            pages = module_info.get("pages", "-")
-            objectives = module_info.get("objectives", [])
-            with st.expander(f"{name} (Pages {pages})", expanded=False):
-                if isinstance(objectives, list) and objectives:
-                    for obj in objectives:
-                        st.markdown(f"- {obj}")
-                else:
-                    st.write("No objectives listed.")
+    st.subheader("Learning Objectives")
+    for label, d in datasets:
+        learning_objectives = d.get("learning_objectives") if isinstance(d, dict) else None
+        if isinstance(learning_objectives, dict) and len(learning_objectives) > 0:
+            st.markdown(f"**Source:** {label}")
+            for module_key, module_info in learning_objectives.items():
+                name = module_info.get("name", module_key)
+                pages = module_info.get("pages", "-")
+                objectives = module_info.get("objectives", [])
+                with st.expander(f"{name} (Pages {pages})", expanded=False):
+                    if isinstance(objectives, list) and objectives:
+                        for obj in objectives:
+                            st.markdown(f"- {obj}")
+                    else:
+                        st.write("No objectives listed.")
 
     with st.expander("Raw JSON", expanded=False):
-        st.json(data)
+        for label, d in datasets:
+            st.markdown(f"**{label}**")
+            st.json(d)
 
-    df = to_dataframe(data)
-    if df is not None and not df.empty:
-        # Focus specifically on the questions list if available
-        if isinstance(data, dict) and isinstance(data.get("questions"), list):
-            df = pd.json_normalize(data["questions"])  # more predictable columns
+    # Build questions dataframe from all datasets
+    frames = []
+    for label, d in datasets:
+        if isinstance(d, dict) and isinstance(d.get("questions"), list):
+            f = pd.json_normalize(d["questions"])  # more predictable columns
+            f["source"] = label
+            frames.append(f)
+
+    df = pd.concat(frames, ignore_index=True) if frames else pd.DataFrame()
+    if not df.empty:
 
         # Ensure Arrow-friendly types (avoid bools mixed with strings)
         if "correct_answer" in df:
@@ -136,6 +154,10 @@ def main():
                     "Lesson Code",
                     sorted(df["lesson_code"].dropna().unique()) if "lesson_code" in df else [],
                 )
+                source_sel = st.multiselect(
+                    "Source",
+                    sorted(df["source"].dropna().unique()) if "source" in df else [],
+                )
 
             # Tags are list-like; collect unique tags safely
             all_tags = set()
@@ -166,6 +188,7 @@ def main():
             # ensure same dtype for comparison
             filtered = filtered[filtered["module"].astype(str).isin([str(m) for m in module_sel])]
         filtered = apply_in_filter(filtered, "lesson_code", lesson_code_sel)
+        filtered = apply_in_filter(filtered, "source", source_sel)
 
         if tags_sel and "tags" in filtered:
             def has_any_tag(x):
@@ -201,9 +224,12 @@ def main():
                 qtype = value(row.get("type"))
                 text = value(row.get("question_text"))
                 page_ref = value(row.get("page_reference"))
+                src = value(row.get("source"))
 
                 header = f"### {qid} — {lesson} (Module {module}) [{difficulty} | {bloom}]"
                 lines.append(header)
+                if src:
+                    lines.append(f"- Source: {src}")
                 if page_ref:
                     lines.append(f"- Page(s): {page_ref}")
                 lines.append(f"- Type: {qtype}")
@@ -259,10 +285,21 @@ def main():
         bcol1, bcol2, bcol3 = st.columns(3)
         with bcol1:
             if st.button("Select all filtered"):
-                selected_ids.update(filtered.get("question_id", pd.Series(dtype=str)).astype(str).tolist())
+                ids = (
+                    filtered.get("question_id", pd.Series(dtype=str)).astype(str)
+                    + "::"
+                    + filtered.get("source", pd.Series(dtype=str)).astype(str)
+                )
+                selected_ids.update(ids.tolist())
         with bcol2:
             if st.button("Clear filtered from selection"):
-                visible = set(filtered.get("question_id", pd.Series(dtype=str)).astype(str).tolist())
+                visible = set(
+                    (
+                        filtered.get("question_id", pd.Series(dtype=str)).astype(str)
+                        + "::"
+                        + filtered.get("source", pd.Series(dtype=str)).astype(str)
+                    ).tolist()
+                )
                 selected_ids.difference_update(visible)
         with bcol3:
             if st.button("Clear ALL selections"):
@@ -276,15 +313,21 @@ def main():
             qid = str(row.get("question_id", ""))
             if qid == "":
                 continue
+            src = str(row.get("source", ""))
+            selection_id = f"{qid}::{src}" if src else qid
             question_preview = str(row.get("question_text", "")).strip().replace("\n", " ")
             if len(question_preview) > 120:
                 question_preview = question_preview[:117] + "..."
-            checked_before = qid in selected_ids
-            checked_now = st.checkbox(f"{qid}: {question_preview}", value=checked_before, key=f"select_{qid}")
+            checked_before = selection_id in selected_ids
+            checked_now = st.checkbox(
+                f"[{src}] {qid}: {question_preview}",
+                value=checked_before,
+                key=f"select_{selection_id}",
+            )
             if checked_now and not checked_before:
-                selected_ids.add(qid)
+                selected_ids.add(selection_id)
             elif not checked_now and checked_before:
-                selected_ids.discard(qid)
+                selected_ids.discard(selection_id)
 
         # Persist updates
         st.session_state["selected_ids"] = selected_ids
@@ -292,7 +335,14 @@ def main():
         # Selected table
         st.subheader(f"Selected Questions ({len(selected_ids)})")
         if len(selected_ids) > 0:
-            selected_df = df[df.get("question_id", pd.Series(dtype=str)).astype(str).isin(list(selected_ids))]
+            # Split selection_id back to (qid, source)
+            sel_pairs = [s.split("::", 1) if "::" in s else [s, ""] for s in selected_ids]
+            sel_df = pd.DataFrame(sel_pairs, columns=["question_id", "source"]) if sel_pairs else pd.DataFrame(columns=["question_id", "source"])
+            selected_df = df.merge(
+                sel_df,
+                on=["question_id", "source"],
+                how="inner",
+            )
             st.dataframe(selected_df, use_container_width=True)
 
             # Export selected as Markdown
